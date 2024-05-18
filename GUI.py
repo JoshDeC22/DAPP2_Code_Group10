@@ -24,12 +24,12 @@ highlighted_arrows = {
 def overlay_arrows_and_mouth_indicator(frame, direction, mouth_open):
     h, w, _ = frame.shape
 
-    # Define positions for ASCII arrows
+    # Define positions for ASCII arrows, adjusting to the left
     positions = {
-        "up": (int(w / 2) - 10, 50),
-        "down": (int(w / 2) - 10, h - 50),
+        "up": (int(w / 2) - 20, 50),
+        "down": (int(w / 2) - 20, h - 50),
         "left": (50, int(h / 2)),
-        "right": (w - 50, int(h / 2)),
+        "right": (w - 100, int(h / 2)),
     }
 
     # Overlay ASCII arrows on the frame
@@ -39,9 +39,9 @@ def overlay_arrows_and_mouth_indicator(frame, direction, mouth_open):
         else:
             cv2.putText(frame, arrows[dir], pos, cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3, cv2.LINE_AA)
 
-    # Overlay mouth open indicator
+    # Overlay mouth open indicator, adjusting to the left
     if mouth_open:
-        cv2.circle(frame, (int(w / 2), int(h / 2)), 50, (0, 0, 255), -1)  # Red filled circle
+        cv2.circle(frame, (int(w / 2) , int(h / 2)), 50, (0, 0, 255), -1)  # Red filled circle
 
     return frame
 
@@ -103,7 +103,7 @@ def data_reconstructor(data):
 
 # Function to open and read the file containing limits
 def file_opener():
-    default_data = '0.3,1.7,30.0,170.0,25.0'
+    default_data = '0.3,1.7,30.0,170.0,25'
     try:
         with open('limits.txt', 'r') as file:
             data = file.read()
@@ -132,7 +132,7 @@ def file_saver(horizontal_ratios, vertical_ratios, mouth_sensitivity):
 
 # Main GUI function
 def main_gui(lower_h, upper_h, lower_v, upper_v, mouth_sensitivity):
-    default_values = [0.3, 1.7, 30.0, 170.0, 25.0]
+    default_values = [0.3, 1.7, 30.0, 170.0, 25]
     sg.theme('DarkBlue17')
 
     starting_horizontal_ratios_string = [str((lower_h / default_values[0]) * 100), str((upper_h / default_values[1]) * 100)]
