@@ -1,0 +1,5 @@
+PySimpleGUI
+numpy
+tensorflow
+opencv-python
+dlib
