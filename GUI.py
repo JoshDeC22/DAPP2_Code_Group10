@@ -103,7 +103,7 @@ def data_reconstructor(data):
 
 # Function to open and read the file containing limits
 def file_opener():
-    default_data = '0.3,1.7,30.0,170.0,25'
+    default_data = '0.3,1.7,30.0,170.0,25.0'
     try:
         with open('limits.txt', 'r') as file:
             data = file.read()
@@ -132,7 +132,7 @@ def file_saver(horizontal_ratios, vertical_ratios, mouth_sensitivity):
 
 # Main GUI function
 def main_gui(lower_h, upper_h, lower_v, upper_v, mouth_sensitivity):
-    default_values = [0.3, 1.7, 30.0, 170.0, 25]
+    default_values = [0.3, 1.7, 30.0, 170.0, 25.0]
     sg.theme('DarkBlue17')
 
     starting_horizontal_ratios_string = [str((lower_h / default_values[0]) * 100), str((upper_h / default_values[1]) * 100)]
