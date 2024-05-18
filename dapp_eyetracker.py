@@ -6,7 +6,7 @@ from math import hypot
 #change the camera by changing the index below, 0 is default
 cap = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("C:\\Users\\mscot\\OneDrive\\Documents\\DAPP programming\\shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 font = cv2.FONT_HERSHEY_PLAIN
 
