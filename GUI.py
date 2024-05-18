@@ -52,7 +52,7 @@ def data_reconstructor(data):
             data_list.append(float(data))
             break
     return data_list
- 
+
 def file_opener():
     while True:
         try:
@@ -89,42 +89,44 @@ def file_saver(horizontal_ratios, vertical_ratios):
     file.close()
 
 def main_gui(lower_h, upper_h, lower_v, upper_v):
+    default_values = [0.3, 1.7, 30.0, 170.0]
     sg.theme('DarkBlack')
 
-    starting_horizontal_ratios_string = [str(lower_h * 100), str(upper_h * 100)]
-    starting_vertical_ratios_string = [str(lower_v), str(upper_v)]
+    starting_horizontal_ratios_string = [str((lower_h / default_values[0]) * 100), str((upper_h / default_values[1]) * 100)]
+    starting_vertical_ratios_string = [str((lower_v / default_values[2]) * 100), str((upper_v / default_values[3]) * 100)]
 
     horizontal_ratios = [lower_h, upper_h]
     vertical_ratios = [lower_v, upper_v]
 
     layout = [
-        [sg.Image(filename = '', key = '-IMAGE-')],
-        [sg.T('Lower horizontal limit:', key = '-HLOWER-'), sg.I(starting_horizontal_ratios_string[0], key = '-IHLOWER-')],
-        [sg.T('Upper horizontal limit:', key = '-HUPPER-'), sg.I(starting_horizontal_ratios_string[1], key = '-IHUPPER-')],
-        [sg.T('Lower vertical limit:', key = '-VLOWER-'), sg.I(starting_vertical_ratios_string[0], key = '-IVLOWER-')],
-        [sg.T('Upper vertical limit:', key = '-VUPPER-'), sg.I(starting_vertical_ratios_string[1], key = '-IVUPPER-')],
-        [sg.Button('Save'), sg.Button('Exit')]
+        [sg.Image(filename='', key='-IMAGE-')],
+        [sg.T('Left limit:', key='-HLOWER-'), sg.I(starting_horizontal_ratios_string[0], key='-IHLOWER-')],
+        [sg.T('Right limit:', key='-HUPPER-'), sg.I(starting_horizontal_ratios_string[1], key='-IHUPPER-')],
+        [sg.T('Down limit:', key='-VLOWER-'), sg.I(starting_vertical_ratios_string[0], key='-IVLOWER-')],
+        [sg.T('Up limit:', key='-VUPPER-'), sg.I(starting_vertical_ratios_string[1], key='-IVUPPER-')],
+        [sg.Save(), sg.Exit()]
     ]
 
-    window = sg.Window("Calibration Interface", layout, size = (800, 800))
+    window = sg.Window("Calibration Interface", layout, size=(800, 800))
 
     cap = cv2.VideoCapture(0)
 
     while True:
-        event, values = window.read()
+        event, values = window.read(timeout=20)  # Use a small timeout to make the loop run frequently
         if event in ('Exit', sg.WIN_CLOSED):
             break
         elif event == 'Save':
-            horizontal_ratios[0] = float(values['-IHLOWER-']) / 100
-            horizontal_ratios[1] = float(values['-IHUPPER-']) / 100
-            vertical_ratios[0] = float(values['-IVLOWER-'])
-            vertical_ratios[1] = float(values['-IVUPPER-'])
+            horizontal_ratios[0] = default_values[0] * (float(values['-IHLOWER-']) / 100)
+            horizontal_ratios[1] = default_values[1] * (float(values['-IHUPPER-']) / 100)
+            vertical_ratios[0] = default_values[2] * (float(values['-IVLOWER-']) / 100)
+            vertical_ratios[1] = default_values[3] * (float(values['-IVUPPER-']) / 100)
             file_saver(horizontal_ratios, vertical_ratios)
         
+        # Webcam feed update
         imgbytes = eyetracking_frame(vertical_ratios[1], vertical_ratios[0], horizontal_ratios[1], horizontal_ratios[0])
         window["-IMAGE-"].update(data=imgbytes)
+
     window.close()
-    cap.release()
 
 if __name__ == '__main__':
     data = file_opener()
