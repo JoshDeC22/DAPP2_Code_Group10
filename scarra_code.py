@@ -29,10 +29,10 @@ if __name__ == '__main__':
     commands = ['down', 'go', 'stop', 'up']
     loaded_model = models.load_model('saved_model_final')
 
-    serial_port, file = open_grbl()
+    serial_port = open_grbl('COM3', 115200)
     
     while True:
-        voice_command = ''
+        voice_command = 0
         
         _, frame = cap.read()
         new_frame = np.zeros((500, 500, 3), np.uint8)
@@ -66,8 +66,16 @@ if __name__ == '__main__':
         else:
             mouth_status = "CLOSED"
         if mouth_status == "OPEN":
-            voice_command = predict_mic()
-        
+            command = predict_mic()
+            if command ==  'up':
+                voice_command = 1
+            elif command == 'down':
+                voice_command = 1
+            elif command == 'go':
+                voice_command = True
+            else:
+                voice_command = False
+                
         send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, file)
     
         cv2.imshow("Frame", frame)
@@ -75,6 +83,6 @@ if __name__ == '__main__':
         if key == 27:
             break
         
-    close_grbl(serial_port, file)
+    close_grbl(serial_port)
     cap.release()
     cv2.destroyAllWindows()                 
