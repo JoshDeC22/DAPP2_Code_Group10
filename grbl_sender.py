@@ -13,9 +13,10 @@ def open_grbl(port_name, baudrate):
 def close_grbl(serial_port, file):
     serial_port.close()
     
-def send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, s):
-    gcode = 'G21G91G1' + 'X' + str(horizontal_gaze_ratio) + 'Y' + str(vertical_gaze_ratio) + 'Z' + str(voice_command) + 'F10' + '\n'
-    s.write(gcode.encode())
+def send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, s, is_moving):
+    if is_moving == True:
+        gcode = 'G21G91G1' + 'X' + str(horizontal_gaze_ratio) + 'Y' + str(vertical_gaze_ratio) + 'Z' + str(voice_command) + 'F10' + '\n'
+        s.write(gcode.encode())
     
     
     
