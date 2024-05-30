@@ -10,7 +10,7 @@ def open_grbl(port_name, baudrate):
     
     return s
 
-def close_grbl(serial_port, file):
+def close_grbl(serial_port):
     serial_port.close()
     
 def send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, s, is_moving):
