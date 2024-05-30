@@ -30,6 +30,8 @@ if __name__ == '__main__':
     loaded_model = models.load_model('saved_model_final')
 
     serial_port = open_grbl('COM3', 115200)
+
+    is_moving = False
     
     while True:
         voice_command = 0
@@ -48,13 +50,21 @@ if __name__ == '__main__':
             average_horizontal_gaze_ratio = (horizontal_gaze_ratio_left_eye + horizontal_gaze_ratio_right_eye) / 2
             average_vertical_gaze_ratio = (vertical_gaze_ratio_left_eye + vertical_gaze_ratio_right_eye) / 2
             
-            if average_horizontal_gaze_ratio < lower_horizontal or average_horizontal_gaze_ratio > upper_horizontal:
-                horizontal_gaze_ratio = average_horizontal_gaze_ratio
+            if average_horizontal_gaze_ratio < lower_horizontal:
+                #horizontal_gaze_ratio = average_horizontal_gaze_ratio - lower_horizontal
+                horizontal_gaze_ratio = -1
+            elif average_horizontal_gaze_ratio > upper_horizontal:
+                #horizontal_gaze_ratio = average_horizontal_gaze_ratio - upper_horizontal
+                horizontal_gaze_ratio = 1
             else:
                 horizontal_gaze_ratio = 0
                 
-            if average_vertical_gaze_ratio > upper_vertical or average_vertical_gaze_ratio < lower_vertical:
-                vertical_gaze_ratio = average_vertical_gaze_ratio
+            if average_vertical_gaze_ratio > upper_vertical:
+                #vertical_gaze_ratio = (average_vertical_gaze_ratio - upper_vertical) / 100
+                vertical_gaze_ratio = 1
+            elif average_vertical_gaze_ratio < lower_vertical:
+                #vertical_gaze_ratio = (average_vertical_gaze_ratio - lower_vertical) / 100
+                vertical_gaze_ratio = -1
             else:
                 vertical_gaze_ratio = 0
                 
@@ -72,11 +82,11 @@ if __name__ == '__main__':
             elif command == 'down':
                 voice_command = 1
             elif command == 'go':
-                voice_command = True
+                is_moving = True
             else:
-                voice_command = False
+                is_moving = False
                 
-        send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, file)
+        send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
         key = cv2.waitKey(1)
