@@ -135,8 +135,8 @@ def main_gui(lower_h, upper_h, lower_v, upper_v, mouth_sensitivity):
     default_values = [0.3, 1.7, 30.0, 170.0, 25]
     sg.theme('DarkBlue17')
 
-    starting_horizontal_ratios_string = [str((lower_h / default_values[0]) * 100), str((upper_h / default_values[1]) * 100)]
-    starting_vertical_ratios_string = [str((lower_v / default_values[2]) * 100), str((upper_v / default_values[3]) * 100)]
+    starting_horizontal_ratios_string = [str((lower_h / default_values[0]) * 100), str(( default_values[1]/upper_h ) * 100)]
+    starting_vertical_ratios_string = [str((lower_v / default_values[2]) * 100), str(( default_values[3]/upper_v) * 100)]
     starting_mouth_sensitivity_string = str((mouth_sensitivity / default_values[4]) * 100)
 
     horizontal_ratios = [lower_h, upper_h]
@@ -147,8 +147,8 @@ def main_gui(lower_h, upper_h, lower_v, upper_v, mouth_sensitivity):
         [sg.Image(filename='', key='-IMAGE-')],
         [sg.Column([
             [sg.Text('Horizontal Limits', font=("Helvetica", 15))],
-            [sg.Text('Left limit:', size=(10, 1)), sg.InputText(starting_horizontal_ratios_string[0], key='-IHLOWER-', size=(10, 1))],
-            [sg.Text('Right limit:', size=(10, 1)), sg.InputText(starting_horizontal_ratios_string[1], key='-IHUPPER-', size=(10, 1))]
+            [sg.Text('Right limit:', size=(10, 1)), sg.InputText(starting_horizontal_ratios_string[0], key='-IHLOWER-', size=(10, 1))],
+            [sg.Text('Left limit:', size=(10, 1)), sg.InputText(starting_horizontal_ratios_string[1], key='-IHUPPER-', size=(10, 1))]
         ]), 
         sg.VSeparator(), 
         sg.Column([
@@ -174,9 +174,9 @@ def main_gui(lower_h, upper_h, lower_v, upper_v, mouth_sensitivity):
             break
         elif event == 'Save':
             horizontal_ratios[0] = default_values[0] * (float(values['-IHLOWER-']) / 100)
-            horizontal_ratios[1] = default_values[1] * (float(values['-IHUPPER-']) / 100)
+            horizontal_ratios[1] = default_values[1] / ((float(values['-IHUPPER-']) / 100))
             vertical_ratios[0] = default_values[2] * (float(values['-IVLOWER-']) / 100)
-            vertical_ratios[1] = default_values[3] * (float(values['-IVUPPER-']) / 100)
+            vertical_ratios[1] = default_values[3] / (float(values['-IVUPPER-']) / 100)
             mouth_sensitivity = default_values[4] * (float(values['-MOUTH-']) / 100)
             file_saver(horizontal_ratios, vertical_ratios, mouth_sensitivity)
         
