@@ -86,7 +86,7 @@ if __name__ == '__main__':
                 is_moving = False
 
         stepsX, stepsY, x, y = inverse_kin(x, y, x_limits, y_limits, horizontal_gaze_ratio, vertical_gaze_ratio)
-        send_command(0, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, is_moving)
+        send_command(0, stepsX, stepsY, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
         key = cv2.waitKey(1)
