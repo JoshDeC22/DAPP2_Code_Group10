@@ -4,6 +4,7 @@ from tensorflow.keras import models
 from recording_helper import record_audio, terminate
 from tf_helper import preprocess_audiobuffer
 from grbl_sender import *
+from inverse_kinematics import *
 
 def predict_mic():
     audio = record_audio()
@@ -32,6 +33,8 @@ if __name__ == '__main__':
     serial_port = open_grbl('COM3', 115200)
 
     is_moving = False
+
+    x, y, x_limits, y_limits = get_original_position()
     
     while True:
         voice_command = 0
@@ -51,20 +54,16 @@ if __name__ == '__main__':
             average_vertical_gaze_ratio = (vertical_gaze_ratio_left_eye + vertical_gaze_ratio_right_eye) / 2
             
             if average_horizontal_gaze_ratio < lower_horizontal:
-                #horizontal_gaze_ratio = average_horizontal_gaze_ratio - lower_horizontal
-                horizontal_gaze_ratio = -1
+                horizontal_gaze_ratio = average_horizontal_gaze_ratio - lower_horizontal
             elif average_horizontal_gaze_ratio > upper_horizontal:
-                #horizontal_gaze_ratio = average_horizontal_gaze_ratio - upper_horizontal
-                horizontal_gaze_ratio = 1
+                horizontal_gaze_ratio = -1 * (average_horizontal_gaze_ratio - upper_horizontal)
             else:
                 horizontal_gaze_ratio = 0
                 
             if average_vertical_gaze_ratio > upper_vertical:
-                #vertical_gaze_ratio = (average_vertical_gaze_ratio - upper_vertical) / 100
-                vertical_gaze_ratio = 1
+                vertical_gaze_ratio = (average_vertical_gaze_ratio - upper_vertical) / 100
             elif average_vertical_gaze_ratio < lower_vertical:
-                #vertical_gaze_ratio = (average_vertical_gaze_ratio - lower_vertical) / 100
-                vertical_gaze_ratio = -1
+                vertical_gaze_ratio = -1 * ((average_vertical_gaze_ratio - lower_vertical) / 100)
             else:
                 vertical_gaze_ratio = 0
                 
@@ -78,21 +77,23 @@ if __name__ == '__main__':
         if mouth_status == "OPEN":
             command = predict_mic()
             if command ==  'up':
-                voice_command = 1
+                send_command(1, 0, 0, serial_port, is_moving)
             elif command == 'down':
-                voice_command = 1
+                send_command(-1, 0, 0, serial_port, is_moving)
             elif command == 'go':
                 is_moving = True
             else:
                 is_moving = False
-                
-        send_command(voice_command, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, is_moving)
+
+        stepsX, stepsY, x, y = inverse_kin(x, y, x_limits, y_limits, horizontal_gaze_ratio, vertical_gaze_ratio)
+        send_command(0, vertical_gaze_ratio, horizontal_gaze_ratio, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
         key = cv2.waitKey(1)
         if key == 27:
             break
-        
+            
+    save_position(x, y, x_limits, y_limits) 
     close_grbl(serial_port)
     cap.release()
     cv2.destroyAllWindows()                 
