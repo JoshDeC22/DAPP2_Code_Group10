@@ -20,7 +20,7 @@ def save_position(x, y, x_limits, y_limits, filename='position.txt'):
     file.write(data)
     file.close()
 
-def get_angles(x, y, l1=228.0, l2=136.5):
+def get_angles(x, y, l1=15.0, l2=15.0):
     theta2 = mt.acos((x**2 + y**2 - (l1**2 + l2**2)) / (2 * l1 * l2))
     theta1 = mt.atan(x / y) - mt.atan((l2 * mt.sin(theta2)) / (l1 + l2 * mt.cos(theta2)))
     theta2 = (-1) * theta2
