@@ -29,19 +29,13 @@ def get_angles(x, y, l1=10.0, l2=10.0):
     theta1 = (mt.pi / 2) - theta1
     return theta1, theta2
     
-def inverse_kin(x, y, x_limits, y_limits, horizontal_gaze_ratio, vertical_gaze_ratio, theta1tosteps=(1/(1.8 * (mt.pi/180))), theta2tosteps=(1/(1.8 * (mt.pi/180))), l1=10.0, l2=10.0):
+def inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio, theta1tosteps=(1/(1.8 * (mt.pi/180))), theta2tosteps=(1/(1.8 * (mt.pi/180)))):
     new_x = x + horizontal_gaze_ratio
     new_y = y + vertical_gaze_ratio
-    if int(x) < x_limits[0] or int(x) > x_limits[1]:
-        new_x = x
-    if int(y) < y_limits[0] or int(y) > y_limits[1]:
-        new_y = y
     theta1, theta2 = get_angles(x, y)
     new_theta1, new_theta2 = get_angles(new_x, new_y)
-    diff_theta1 = new_theta1 - theta1
-    diff_theta2 = new_theta2 - theta2
-    num_steps1 = (int(diff_theta1 * theta1tosteps * 1000)/1000) / 250
-    num_steps2 = (int(diff_theta2 * theta2tosteps * 1000)/1000) / 250
+    num_steps1 = ((new_theta1 - theta1) * theta1tosteps) / 250
+    num_steps2 = ((new_theta2 - theta2) * theta2tosteps) / 250
     return num_steps1, num_steps2, new_x, new_y
 
 if __name__ == '__main__':
