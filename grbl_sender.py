@@ -1,9 +1,8 @@
 import serial
 import time
 
-def open_grbl(port_name, baudrate):
+def open_grbl(port_name, baudrate=115200):
     s = serial.Serial(port_name, baudrate)
-
     s.write("\r\n\r\n".encode())
     time.sleep(2)
     s.reset_input_buffer()
