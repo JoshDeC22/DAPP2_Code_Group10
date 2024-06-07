@@ -5,6 +5,13 @@ from recording_helper import record_audio, terminate
 from tf_helper import preprocess_audiobuffer
 from grbl_sender import *
 from inverse_kinematics import *
+import serial.tools.list_ports
+
+def find_port():
+    ports = list(serial.tools.list_ports.comports())
+    for p in ports:
+        if 'Arduino' in p.description:
+            return p.name
 
 def predict_mic():
     audio = record_audio()
@@ -30,7 +37,9 @@ if __name__ == '__main__':
     commands = ['down', 'go', 'stop', 'up']
     loaded_model = models.load_model('saved_model_final')
 
-    serial_port = open_grbl('COM9')
+    com_port = find_port()
+
+    serial_port = open_grbl(com_port)
 
     is_moving = True
     mouth_status = "CLOSED"
