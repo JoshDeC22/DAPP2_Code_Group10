@@ -46,8 +46,6 @@ if __name__ == '__main__':
     x, y, x_limits, y_limits = get_original_position()
     
     while True:
-        voice_command = 'stop'
-        
         _, frame = cap.read()
         new_frame = np.zeros((500, 500, 3), np.uint8)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
