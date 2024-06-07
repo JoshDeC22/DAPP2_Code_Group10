@@ -30,7 +30,7 @@ if __name__ == '__main__':
     commands = ['down', 'go', 'stop', 'up']
     loaded_model = models.load_model('saved_model_final')
 
-    serial_port = open_grbl('COM9', 115200)
+    serial_port = open_grbl('COM9')
 
     is_moving = True
     mouth_status = "CLOSED"
