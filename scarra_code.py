@@ -32,12 +32,12 @@ if __name__ == '__main__':
 
     serial_port = open_grbl('COM9', 115200)
 
-    is_moving = False
-
+    is_moving = True
+    mouth_status = "CLOSED"
     x, y, x_limits, y_limits = get_original_position()
     
     while True:
-        voice_command = 0
+        voice_command = 'stop'
         
         _, frame = cap.read()
         new_frame = np.zeros((500, 500, 3), np.uint8)
@@ -54,26 +54,29 @@ if __name__ == '__main__':
             average_vertical_gaze_ratio = (vertical_gaze_ratio_left_eye + vertical_gaze_ratio_right_eye) / 2
             
             if average_horizontal_gaze_ratio < lower_horizontal:
-                horizontal_gaze_ratio = average_horizontal_gaze_ratio - lower_horizontal
+                horizontal_gaze_ratio = 0.1
             elif average_horizontal_gaze_ratio > upper_horizontal:
-                horizontal_gaze_ratio = -1 * (average_horizontal_gaze_ratio - upper_horizontal)
+                horizontal_gaze_ratio = -0.1
             else:
+                horizontal_gaze_ratio = 0
+
+            if x < x_limits[0] or x > x_limits[1]:
                 horizontal_gaze_ratio = 0
                 
             if average_vertical_gaze_ratio > upper_vertical:
-                vertical_gaze_ratio = (average_vertical_gaze_ratio - upper_vertical) / 100
+                vertical_gaze_ratio = 0.1
             elif average_vertical_gaze_ratio < lower_vertical:
-                vertical_gaze_ratio = -1 * ((average_vertical_gaze_ratio - lower_vertical) / 100)
+                vertical_gaze_ratio = -0.1
             else:
                 vertical_gaze_ratio = 0
-                
-            
+
+            if y < y_limits[0] or y > y_limits[1]:
+                vertical_gaze_ratio = 0
+                  
         mouth_open_ratio = get_mouth_open_ratio(63, 67, landmarks)
         
         if mouth_open_ratio > mouth_threshold:
             mouth_status = "OPEN"
-        else:
-            mouth_status = "CLOSED"
         if mouth_status == "OPEN":
             command = predict_mic()
             if command ==  'up':
@@ -84,9 +87,10 @@ if __name__ == '__main__':
                 is_moving = True
             else:
                 is_moving = False
-
-        stepsX, stepsY, x, y = inverse_kin(x, y, x_limits, y_limits, horizontal_gaze_ratio, vertical_gaze_ratio)
-        send_command(0, stepsX, stepsY, serial_port, is_moving)
+        mouth_status = 'CLOSED'
+        
+        stepsY, stepsX, x, y = inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio)
+        send_command(0, stepsY, stepsX, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
         key = cv2.waitKey(1)
