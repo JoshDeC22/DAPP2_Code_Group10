@@ -106,5 +106,6 @@ if __name__ == '__main__':
             
     save_position(x, y, x_limits, y_limits) 
     close_grbl(serial_port)
+    terminate()
     cap.release()
     cv2.destroyAllWindows()                 
