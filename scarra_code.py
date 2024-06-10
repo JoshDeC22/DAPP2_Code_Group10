@@ -45,7 +45,7 @@ if __name__ == '__main__':
     mouth_status = "CLOSED"
     x, y, x_limits, y_limits = get_original_position()
     
-    while True:
+    while True:  
         _, frame = cap.read()
         new_frame = np.zeros((500, 500, 3), np.uint8)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -87,9 +87,9 @@ if __name__ == '__main__':
         if mouth_status == "OPEN":
             command = predict_mic()
             if command ==  'up':
-                send_command(1, 0, 0, serial_port, is_moving)
+                send_command(0, 0, 1, serial_port, is_moving)
             elif command == 'down':
-                send_command(-1, 0, 0, serial_port, is_moving)
+                send_command(0, 0, -1, serial_port, is_moving)
             elif command == 'go':
                 is_moving = True
             else:
@@ -97,7 +97,7 @@ if __name__ == '__main__':
         mouth_status = 'CLOSED'
         
         stepsY, stepsX, x, y = inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio)
-        send_command(0, stepsY, stepsX, serial_port, is_moving)
+        send_command(stepsY, stepsX, 0, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
         key = cv2.waitKey(1)
