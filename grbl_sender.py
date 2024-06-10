@@ -23,12 +23,9 @@ def send_command(horizontal_gaze_ratio, vertical_gaze_ratio, voice_command, s, i
 
 if __name__ == '__main__':
     port = open_grbl('COM9')
-    x, y = 0, 420
+
     step = inverse_kinematics.inverse_kin_angles(-math.pi / 4)
-    x1 = math.sqrt(3) * 210
-    change = x1 - 420
-    stepX, stepY, new_x, new_y, theta1, theta2 = inverse_kinematics.inverse_kin(x, y, 0, change)
-    print(theta1 * (180 / math.pi), theta2 * (180 / math.pi))
+
     send_command(step, 0, 0, port, True)
 
     close_grbl(port)
