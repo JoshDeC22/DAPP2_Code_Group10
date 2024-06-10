@@ -6,6 +6,7 @@ from tf_helper import preprocess_audiobuffer
 from grbl_sender import *
 from inverse_kinematics import *
 import serial.tools.list_ports
+import math as mt
 
 def find_port():
     ports = list(serial.tools.list_ports.comports())
@@ -43,7 +44,8 @@ if __name__ == '__main__':
 
     is_moving = True
     mouth_status = "CLOSED"
-    x, y, x_limits, y_limits = get_original_position()
+    x, y, r, theta1_limits, theta2_limits = get_original_position()
+    theta1, theta2 = get_angles(x, y)
     
     while True:  
         _, frame = cap.read()
@@ -66,18 +68,12 @@ if __name__ == '__main__':
                 horizontal_gaze_ratio = -0.1
             else:
                 horizontal_gaze_ratio = 0
-
-            if x < x_limits[0] or x > x_limits[1]:
-                horizontal_gaze_ratio = 0
                 
             if average_vertical_gaze_ratio > upper_vertical:
                 vertical_gaze_ratio = 0.1
             elif average_vertical_gaze_ratio < lower_vertical:
                 vertical_gaze_ratio = -0.1
             else:
-                vertical_gaze_ratio = 0
-
-            if y < y_limits[0] or y > y_limits[1]:
                 vertical_gaze_ratio = 0
                   
         mouth_open_ratio = get_mouth_open_ratio(63, 67, landmarks)
@@ -95,8 +91,12 @@ if __name__ == '__main__':
             else:
                 is_moving = False
         mouth_status = 'CLOSED'
+
+        if theta1 < theta1_limits[0] or theta1 > theta1_limits[1] or theta2 < theta2_limits[0] or theta2 > theta2_limits[1] or mt.sqrt(x**2 + y**2) > r:
+            is_moving = False
         
         stepsY, stepsX, x, y = inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio)
+        theta1, theta2 = get_angles(x, y)
         send_command(stepsY, stepsX, 0, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
@@ -108,4 +108,4 @@ if __name__ == '__main__':
     close_grbl(serial_port)
     terminate()
     cap.release()
-    cv2.destroyAllWindows()                 
+    cv2.destroyAllWindows()
