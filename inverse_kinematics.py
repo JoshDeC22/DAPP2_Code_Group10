@@ -36,7 +36,7 @@ def inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio, theta1tosteps=
     new_theta1, new_theta2 = get_angles(new_x, new_y)
     num_steps1 = ((new_theta1 - theta1) * theta1tosteps) / 12.5
     num_steps2 = ((new_theta2 - theta2) * theta2tosteps) / 12.5
-    return num_steps1, num_steps2, new_x, new_y, new_theta1 - theta1, new_theta2 - theta2
+    return num_steps1, num_steps2, new_x, new_y
 
 def inverse_kin_angles(theta1, theta1tosteps=(100/mt.pi)):
     num_steps1 = ((theta1) * theta1tosteps) / 12.5
