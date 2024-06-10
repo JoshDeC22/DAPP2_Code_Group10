@@ -46,6 +46,7 @@ if __name__ == '__main__':
     mouth_status = "CLOSED"
     x, y, r, theta1_limits, theta2_limits = get_original_position()
     theta1, theta2 = get_angles(x, y)
+    theta1, theta2 = theta1 * (180 / mt.pi), theta2 * (180 / mt.pi)
     
     while True:  
         _, frame = cap.read()
@@ -97,6 +98,7 @@ if __name__ == '__main__':
         
         stepsY, stepsX, x, y = inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio)
         theta1, theta2 = get_angles(x, y)
+        theta1, theta2 = theta1 * (180 / mt.pi), theta2 * (180 / mt.pi)
         send_command(stepsY, stepsX, 0, serial_port, is_moving)
     
         cv2.imshow("Frame", frame)
