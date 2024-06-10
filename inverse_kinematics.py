@@ -20,7 +20,7 @@ def save_position(x, y, x_limits, y_limits, filename='position.txt'):
     file.write(data)
     file.close()
 
-def get_angles(x, y, l1=10.0, l2=10.0):
+def get_angles(x, y, l1=210, l2=210):
     cos_theta2 = (x**2 + y**2 - (l1**2 + l2**2)) / (2 * l1 * l2)
     cos_theta2 = min(max(cos_theta2, -1), 1)
     theta2 = mt.acos(cos_theta2)
@@ -29,14 +29,18 @@ def get_angles(x, y, l1=10.0, l2=10.0):
     theta1 = (mt.pi / 2) - theta1
     return theta1, theta2
     
-def inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio, theta1tosteps=(1/(1.8 * (mt.pi/180))), theta2tosteps=(1/(1.8 * (mt.pi/180)))):
+def inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio, theta1tosteps=(100/mt.pi), theta2tosteps=(100/mt.pi)):
     new_x = x + horizontal_gaze_ratio
     new_y = y + vertical_gaze_ratio
     theta1, theta2 = get_angles(x, y)
     new_theta1, new_theta2 = get_angles(new_x, new_y)
-    num_steps1 = ((new_theta1 - theta1) * theta1tosteps) / 250
-    num_steps2 = ((new_theta2 - theta2) * theta2tosteps) / 250
-    return num_steps1, num_steps2, new_x, new_y
+    num_steps1 = ((new_theta1 - theta1) * theta1tosteps) / 12.5
+    num_steps2 = ((new_theta2 - theta2) * theta2tosteps) / 12.5
+    return num_steps1, num_steps2, new_x, new_y, new_theta1 - theta1, new_theta2 - theta2
+
+def inverse_kin_angles(theta1, theta1tosteps=(100/mt.pi)):
+    num_steps1 = ((theta1) * theta1tosteps) / 12.5
+    return num_steps1
 
 if __name__ == '__main__':
-    save_position(10.0, 10.0, [0, 20], [0, 20])
+    save_position(10.0, 10.0, [-200, 200], [-200, 200])
