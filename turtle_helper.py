@@ -1,20 +1,6 @@
 import turtle
 
-s = turtle.getscreen()
-
-t = turtle.Turtle()
-
-size = t.turtlesize()
-
-increase = (2*num for num in size)
-
-t.turtlesize(*increase)
-
-t.pensize(5)
-t.shapesize()
-t.pencolor('blue')
-
-def go_right():
+def go_right(t):
     current = t.heading()
     if current == 0:
         pass
@@ -33,7 +19,7 @@ def go_right():
     elif current == 315:
         t.left(45)
 
-def go_left():
+def go_left(t):
     current = t.heading()
     if current == 180:
         pass
@@ -52,7 +38,7 @@ def go_left():
     elif current == 315:
         t.right(135)
 
-def go_up():
+def go_up(t):
     current = t.heading()
     if current == 90:
         pass
@@ -71,7 +57,7 @@ def go_up():
     elif current == 315:
         t.left(135)
 
-def go_down():
+def go_down(t):
     current = t.heading()
     if current == 270:
         pass
@@ -90,7 +76,7 @@ def go_down():
     elif current == 315:
         t.right(45)
 
-def go_NE():
+def go_NE(t):
     current = t.heading()
     if current == 45:
         pass
@@ -109,7 +95,7 @@ def go_NE():
     elif current == 315:
         t.left(90)
 
-def go_NW():
+def go_NW(t):
     current = t.heading()
     if current == 135:
         pass
@@ -128,7 +114,7 @@ def go_NW():
     elif current == 315:
         t.left(180)
 
-def go_SW():
+def go_SW(t):
     current = t.heading()
     if current == 225:
         pass
@@ -147,7 +133,7 @@ def go_SW():
     elif current == 315:
         t.right(90)
 
-def go_SE():
+def go_SE(t):
     current = t.heading()
     if current == 315:
         pass
@@ -166,22 +152,22 @@ def go_SE():
     elif current == 225:
         t.left(90)
 
-def move(x, y, ismoving):
+def move(x, y, t, ismoving):
     if ismoving:
         if x == 1 and y == 0:
-            go_right()
+            go_right(t)
         elif x == 1 and y == 1:
-            go_NE()
+            go_NE(t)
         elif x == 1 and y == -1:
-            go_SE()
+            go_SE(t)
         elif x == 0 and y == 1:
-            go_up()
+            go_up(t)
         elif x == 0 and y == -1:
-            go_down()
+            go_down(t)
         elif x == -1 and y == 0:
-            go_left()
+            go_left(t)
         elif x == -1 and y == 1:
-            go_NW()
+            go_NW(t)
         elif x == -1 and y == -1:
-            go_SW()
-        t.forward(150)         
+            go_SW(t)
+        t.forward(1)         
