@@ -5,17 +5,18 @@ def get_original_position(filename='position.txt'):
     data = file.read()
     data = data.split(',')
     x, y = data[0:2]
-    x_limits = data[2:4]
-    x_limits = [int(i) for i in x_limits]
-    y_limits = data[4:6]
-    y_limits = [int(i) for i in y_limits]
+    r = data[2]
+    theta1_limits = data[3:5]
+    theta1_limits = [int(i) for i in theta1_limits]
+    theta2_limits = data[5:7]
+    theta2_limits = [int(i) for i in theta2_limits]
     file.close()
-    return float(x), float(y), x_limits, y_limits
+    return float(x), float(y), r, theta1_limits, theta2_limits
 
-def save_position(x, y, x_limits, y_limits, filename='position.txt'):
-    x_limits = [str(i) for i in x_limits]
-    y_limits = [str(i) for i in y_limits]
-    data = ','.join([str(x), str(y)]) + ',' + ','.join(x_limits) + ',' + ','.join(y_limits)
+def save_position(x, y, r, theta1_limits, theta2_limits, filename='position.txt'):
+    theta1_limits = [str(i) for i in theta1_limits]
+    theta2_limits = [str(i) for i in theta2_limits]
+    data = ','.join([str(x), str(y)]) + ',' + str(r) + ',' + ','.join(theta1_limits) + ',' + ','.join(theta2_limits)
     file = open(filename, 'w')
     file.write(data)
     file.close()
@@ -43,4 +44,4 @@ def inverse_kin_angles(theta1, theta1tosteps=(100/mt.pi)):
     return num_steps1
 
 if __name__ == '__main__':
-    save_position(10.0, 10.0, [-200, 200], [-200, 200])
+    save_position(0, 429, 429, [-90, 270], [-80, 80])
