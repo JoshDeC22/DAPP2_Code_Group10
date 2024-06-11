@@ -94,7 +94,8 @@ if __name__ == '__main__':
         mouth_status = 'CLOSED'
 
         if theta1 < theta1_limits[0] or theta1 > theta1_limits[1] or theta2 < theta2_limits[0] or theta2 > theta2_limits[1] or mt.sqrt(x**2 + y**2) > r:
-            is_moving = False
+            horizontal_gaze_ratio = 0
+            vertical_gaze_ratio = 0
         
         stepsY, stepsX, x, y = inverse_kin(x, y, horizontal_gaze_ratio, vertical_gaze_ratio)
         theta1, theta2 = get_angles(x, y)
