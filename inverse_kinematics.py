@@ -44,4 +44,4 @@ def inverse_kin_angles(theta1, theta1tosteps=(100/mt.pi)):
     return num_steps1
 
 if __name__ == '__main__':
-    save_position(0, 429, 429, [-90, 270], [-80, 80])
+    save_position(0, 429, 429, [0, 180], [-35, 35])
