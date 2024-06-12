@@ -9,7 +9,7 @@ def record_audio():
         channels = 1,
         rate = 16000,
         input = True,
-        fpb = 3200,
+        frames_per_buffer = 3200,
         input_device_index = 1
     )
 
