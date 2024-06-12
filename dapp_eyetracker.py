@@ -47,10 +47,10 @@ def get_gaze_ratio(eye_points, landmarks, frame, gray):
     eye = cv2.bitwise_and(gray, gray, mask=mask)
 
     # Find the bounding box of the eye
-    min_x = np.min(eye_region[:, 0])
-    max_x = np.max(eye_region[:, 0])
-    min_y = np.min(eye_region[:, 1])
-    max_y = np.max(eye_region[:, 1])
+    min_x = np.min(region[:, 0])
+    max_x = np.max(region[:, 0])
+    min_y = np.min(region[:, 1])
+    max_y = np.max(region[:, 1])
     gray_eye = eye[min_y:max_y, min_x:max_x]
 
     # Threshold to isolate the pupil
