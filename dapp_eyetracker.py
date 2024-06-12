@@ -10,23 +10,23 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 font = cv2.FONT_HERSHEY_PLAIN
 
-def get_mouth_open_ratio(upper_lip_point, lower_lip_point, facial_landmarks):
-    upper_lip = (facial_landmarks.part(upper_lip_point).x, facial_landmarks.part(upper_lip_point).y)
-    lower_lip = (facial_landmarks.part(lower_lip_point).x, facial_landmarks.part(lower_lip_point).y)
+def get_mouth_open_ratio(upper_lip_point, lower_lip_point, landmarks):
+    upper_lip = (landmarks.part(upper_lip_point).x, landmarks.part(upper_lip_point).y)
+    lower_lip = (landmarks.part(lower_lip_point).x, landmarks.part(lower_lip_point).y)
 
     # Calculating the vertical distance between the upper and lower lip
     distance = hypot((upper_lip[0] - lower_lip[0]), (upper_lip[1] - lower_lip[1]))
     return distance
 
 
-def midpoint(p1,p2):
-    return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
+def midpoint(point1,point2):
+    return int((point1.x + point2.x)/2), int((point1.y + point2.y)/2)
 
-def get_blinking_ratio(eye_points, facial_landmarks):
-    left_point = (facial_landmarks.part(eye_points[0]).x,facial_landmarks.part(eye_points[0]).y)
-    right_point = (facial_landmarks.part(eye_points[3]).x,facial_landmarks.part(eye_points[3]).y)
-    center_top = midpoint(facial_landmarks.part(eye_points[1]),facial_landmarks.part(eye_points[2]))
-    center_bottom = midpoint(facial_landmarks.part(eye_points[5]),facial_landmarks.part(eye_points[4]))
+def get_blinking_ratio(eye_points, landmarks):
+    left_point = (landmarks.part(eye_points[0]).x,landmarks.part(eye_points[0]).y)
+    right_point = (landmarks.part(eye_points[3]).x,landmarks.part(eye_points[3]).y)
+    center_top = midpoint(landmarks.part(eye_points[1]),landmarks.part(eye_points[2]))
+    center_bottom = midpoint(landmarks.part(eye_points[5]),landmarks.part(eye_points[4]))
 
     #hor_line = cv2.line(frame,left_point,right_point,(0,255,0),2)
     #ver_line = cv2.line(frame, center_top, center_bottom, (0,255,0), 2)
@@ -37,13 +37,13 @@ def get_blinking_ratio(eye_points, facial_landmarks):
     ratio = (hor_line_length/ver_line_length)
     return ratio
 
-def get_gaze_ratio(eye_points, facial_landmarks, frame, gray):
-    eye_region = np.array([(facial_landmarks.part(point).x, facial_landmarks.part(point).y) for point in eye_points], np.int32)
+def get_gaze_ratio(eye_points, landmarks, frame, gray):
+    region = np.array([(landmarks.part(point).x, landmarks.part(point).y) for point in eye_points], np.int32)
     # Calculate the mask for the eye
-    height, width = frame.shape[:2]
-    mask = np.zeros((height, width), np.uint8)
-    cv2.polylines(mask, [eye_region], True, 255, 2)
-    cv2.fillPoly(mask, [eye_region], 255)
+    h, w = frame.shape[:2]
+    mask = np.zeros((h, w), np.uint8)
+    cv2.polylines(mask, [region], True, 255, 2)
+    cv2.fillPoly(mask, [region], 255)
     eye = cv2.bitwise_and(gray, gray, mask=mask)
 
     # Find the bounding box of the eye
@@ -54,65 +54,21 @@ def get_gaze_ratio(eye_points, facial_landmarks, frame, gray):
     gray_eye = eye[min_y:max_y, min_x:max_x]
 
     # Threshold to isolate the pupil
-    _, threshold_eye = cv2.threshold(gray_eye, 70, 255, cv2.THRESH_BINARY)
+    _, threshold = cv2.threshold(gray_eye, 70, 255, cv2.THRESH_BINARY)
     
     # Calculate the horizontal gaze ratio
-    height, width = threshold_eye.shape
-    left_side_threshold = threshold_eye[0:height, 0:int(width / 2)]
-    left_side_white = cv2.countNonZero(left_side_threshold)
-    right_side_threshold = threshold_eye[0:height, int(width / 2):width]
-    right_side_white = cv2.countNonZero(right_side_threshold)
-    horizontal_gaze_ratio = left_side_white / (right_side_white + 1e-1)
+    h, w = threshold.shape
+    left_threshold = threshold[0:h, 0:int(w / 2)]
+    left_white = cv2.countNonZero(left_threshold)
+    right_threshold = threshold[0:h, int(w / 2):w]
+    right_white = cv2.countNonZero(right_threshold)
+    horizontal_gaze_ratio = left_white / (right_white + 1e-1)
 
     # Calculate the vertical gaze ratio
-    top_side_threshold = threshold_eye[0:int(height / 2), :]
-    top_side_white = cv2.countNonZero(top_side_threshold)
-    bottom_side_threshold = threshold_eye[int(height / 2):height, :]
-    bottom_side_white = cv2.countNonZero(bottom_side_threshold)
-    vertical_gaze_ratio =(bottom_side_white + 1e-1)
+    top_threshold = threshold[0:int(h / 2), :]
+    top_white = cv2.countNonZero(top_threshold)
+    bottom_threshold = threshold[int(h / 2):h, :]
+    bottom_white = cv2.countNonZero(bottom_threshold)
+    vertical_gaze_ratio =(bottom_white + 1e-1)
 
     return horizontal_gaze_ratio, vertical_gaze_ratio
-
-if __name__ == '__main__':
-    while True:
-        _, frame = cap.read()
-        new_frame = np.zeros((500, 500, 3), np.uint8)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = detector(gray)
-        for face in faces:
-            landmarks = predictor(gray, face)
-        
-            # Gaze detection
-            horizontal_gaze_ratio_left_eye, vertical_gaze_ratio_left_eye = get_gaze_ratio([36, 37, 38, 39, 40, 41], landmarks, frame, gray)
-            horizontal_gaze_ratio_right_eye, vertical_gaze_ratio_right_eye = get_gaze_ratio([42, 43, 44, 45, 46, 47], landmarks, frame, gray)
-        
-            # Average the gaze ratio for both eyes
-            horizontal_gaze_ratio = (horizontal_gaze_ratio_left_eye + horizontal_gaze_ratio_right_eye) / 2
-            vertical_gaze_ratio = (vertical_gaze_ratio_left_eye + vertical_gaze_ratio_right_eye) / 2
-        
-            # Detecting direction by comparing the gaze ratio to thresholds
-            if horizontal_gaze_ratio < 0.7:
-                cv2.putText(frame, "LOOKING RIGHT", (50, 100), font, 2, (0, 0, 255), 3)
-            elif 0.7 <= horizontal_gaze_ratio < 1.7:
-                cv2.putText(frame, "LOOKING CENTER", (50, 100), font, 2, (0, 0, 255), 3)
-            else:
-                cv2.putText(frame, "LOOKING LEFT", (50, 100), font, 2, (0, 0, 255), 3)
-        
-            # Detecting up or down
-            
-            #print(vertical_gaze_ratio)
-            if vertical_gaze_ratio > 110:
-                cv2.putText(frame, "LOOKING UP", (50, 150), font, 2, (0, 255, 0), 3)
-            elif 60 <= vertical_gaze_ratio < 100:
-                # Horizontal center text already present, no need for vertical center text
-                pass
-            else:
-                cv2.putText(frame, "LOOKING DOWN", (50, 200), font, 2, (255, 0, 0), 3)
-
-        cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
