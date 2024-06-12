@@ -1,8 +1,8 @@
 from dapp_eyetracker import *
 from GUI import *
 from tensorflow.keras import models
-from recording import record_audio, terminate
-from tf_helper import preprocess_audiobuffer
+from recorder import record_audio, terminate
+from preprocessor import preprocess_audiobuffer
 from turtle_helper import move
 import turtle
 
