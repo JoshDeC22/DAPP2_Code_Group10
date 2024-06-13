@@ -107,7 +107,7 @@ if __name__ == '__main__':
         if key == 27:
             break
             
-    save_position(x, y, x_limits, y_limits) 
+    save_position(x, y, r, theta1_limits, theta2_limits) 
     close_grbl(serial_port)
     terminate()
     cap.release()
