@@ -84,9 +84,9 @@ if __name__ == '__main__':
         if mouth_status == "OPEN":
             command = predict_mic()
             if command ==  'up':
-                send_command(0, 0, 1, serial_port, is_moving)
-            elif command == 'down':
                 send_command(0, 0, -1, serial_port, is_moving)
+            elif command == 'down':
+                send_command(0, 0, 1, serial_port, is_moving)
             elif command == 'go':
                 is_moving = True
             else:
